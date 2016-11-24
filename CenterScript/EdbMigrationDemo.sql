@@ -337,12 +337,12 @@ RECONFIGURE;
 EXEC sp_configure ''xp_cmdshell'', 1 
 RECONFIGURE;
 
-if ''@@PlanType''<>''整机迁移'' and ''@@PlanType''<>''升级独享''
-exec drp..SP_MIGRATE_User @@PlanID,0
-
 /*Select * From @@MIGRATESEVER.[dbo].[MigrationLog] Where PlanID=@@PlanID And PlanStatus=''MIGRATE.ZIPXLS.DONE''*/
 if Exists(Select * From @@MIGRATESEVER.[dbo].[MigrationPlan] Where PlanID=@@PlanID And SourceStatus=''MIGRATE.MOVEDB'')
 Begin
+	if ''@@PlanType''<>''整机迁移'' and ''@@PlanType''<>''升级独享''
+	exec drp..SP_MIGRATE_User @@PlanID,0
+
 	exec master.dbo.xp_cmdshell ''if exist D:\temp\copyxls.rar del /f /q D:\temp\copyxls.rar'';
 	exec master.dbo.xp_cmdshell ''del /f /q D:\copyxls\* 1>nul'';
 	exec master.dbo.xp_cmdshell ''D:\tool\Axel2.4\axel.exe -n 5 -o D:\temp\ @@SourceVIPWeb/copyxls.rar'';
